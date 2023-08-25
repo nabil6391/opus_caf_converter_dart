@@ -198,31 +198,54 @@ class PacketTable {
   PacketTable({required this.header, required this.entries});
 
   Uint8List encode() {
-    final int dataSize = 24 + 2 * entries.length;
-    final data = ByteData(dataSize);
+    final List<List<int>> encodedVarintEntriesChunks =
+        entries.map((entry) => encodeVarint(entry)).toList();
+
+    int totalLength = 24;
+    for (var encodedChunk in encodedVarintEntriesChunks) {
+      totalLength += encodedChunk.length;
+    }
+
+    final data = ByteData(totalLength);
     data.setInt64(0, header.numberPackets);
     data.setInt64(8, header.numberValidFrames);
     data.setInt32(16, header.primingFrames);
     data.setInt32(20, header.remainderFrames);
 
     int offset = 24;
-    for (final entry in entries) {
-      encodeVarint(offset, data, entry);
-      offset += 2;
+    for (final entry in encodedVarintEntriesChunks) {
+      for (int i = 0; i < entry.length; i++) {
+        data.setUint8(offset + i, entry[i]);
+      }
+      offset += entry.length;
     }
     return data.buffer.asUint8List();
   }
 
   /// Encodes an integer to `data` using variable-length encoding technique (varint) format
-  void encodeVarint(int offset, ByteData data, int i) {
-    int position = offset;
-
-    while (i >= 0x80) {
-      data.setUint8(position++, (i & 0x7F) | 0x80);
-      i >>= 7;
+  List<int> encodeVarint(int value) {
+    List<int> byts = [];
+    var cur = value;
+    while (cur != 0) {
+      byts.add(cur & 127);
+      cur >>= 7;
     }
 
-    data.setUint8(position, i);
+    int i = byts.length - 1;
+    if (i == 0) return byts;
+
+    List<int> modifiedBytes = [];
+
+    while (i >= 0) {
+      var val = byts[i];
+      if (i > 0) {
+        val = val | 0x80;
+      }
+      modifiedBytes.add(val);
+      i--;
+    }
+
+    return modifiedBytes;
   }
 }
 
