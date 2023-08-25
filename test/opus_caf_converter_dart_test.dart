@@ -30,18 +30,19 @@ Future<void> convertAndTestOutput(OpusCaf opusCaf, String inputFile,
   final contents1 = await File(outputCorrect).readAsBytes();
   final contents2 = await File(outputFileCode).readAsBytes();
 
-  if (contents2.length == contents1.length) {
-    print('contents are same');
-  } else if (contents2.length != contents1.length) {
+  if (contents2.length != contents1.length) {
     print(
-        'contents of input differ when decoding and reencoding, before: ${contents1.length} after: ${contents2.length}');
+        'contents of input differ when decoding and reencoding, correct: ${contents1.length} wrong: ${contents2.length}');
+    assert(false);
   } else {
     for (var i = 0; i < contents1.length; i++) {
       if (contents2[i] != contents1[i]) {
         print(
             'contents of output differ starting at offset $i ${contents1[i].toRadixString(16)} ${contents2[i].toRadixString(16)}');
+        assert(false);
         break;
       }
     }
   }
+  assert(true);
 }
