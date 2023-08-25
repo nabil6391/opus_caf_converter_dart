@@ -1,3 +1,4 @@
+/// Library for converting Opus audio data to CAF format.
 library opus_caf_converter;
 
 import 'dart:io';
@@ -5,7 +6,12 @@ import 'dart:io';
 import 'src/caf_models.dart';
 import 'src/opus_models.dart';
 
+/// A class for converting Opus audio data to CAF format.
 class OpusCaf {
+  /// Converts Opus audio data to CAF format and saves it to the specified output path.
+  ///
+  /// [inputFile] is the path to the Opus audio file to be converted.
+  /// [outputPath] is the path where the resulting CAF file will be saved.
   void convertOpusToCaf(String inputFile, String outputPath) {
     _convertOpusToCaf(inputFile, outputPath);
   }
@@ -37,6 +43,7 @@ class OpusCaf {
     file.writeAsBytesSync(encodedData);
   }
 
+  /// Calculates the length of the packet table based on trailing data.
   int _calculatePacketTableLength(List<int> trailingData) {
     int packetTableLength = 24;
 
@@ -58,6 +65,7 @@ class OpusCaf {
     return packetTableLength;
   }
 
+  /// Builds a CAF file from provided data.
   CafFile _buildCafFile(
       {required OggHeader header,
       required List<int> audioData,
@@ -112,6 +120,7 @@ class OpusCaf {
       contents: CAFStringsChunk(
         numEntries: 1,
         strings: [Information(key: 'encoder\x00', value: 'Lavf59.27.100\x00')],
+        // strings: [Information(key: 'encoder\x00', value: 'Lavf60.3.100\x00')],
       ),
     );
 

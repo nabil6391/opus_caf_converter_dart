@@ -1,5 +1,5 @@
 name: opus_caf_converter_dart
-description: A powerful Dart package designed to effortlessly and losslessly convert Opus files to Apple's Core Audio Format (CAF), enabling the seamless integration of Opus audio in iOS systems
+description: Dart package to convert Opus files to Apple's CAF for seamless iOS integration—losslessly & effortlessly.
 version: 1.0.1
 homepage: https://github.com/nabil6391/opus_caf_converter_dart
 
